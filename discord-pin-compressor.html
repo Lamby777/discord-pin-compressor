@@ -1,0 +1,130 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<title>Rebane's Discord Pin Compressor</title>
+<meta charset="UTF-8">
+<meta name="description" content="Rebane's Discord Pin Compressor">
+<meta name="author" content="rebane2001">
+<style>
+	html {
+		font-family: sans-serif;
+		background-color: #36393F;
+		text-align: center;
+		color: #FFF;
+	}
+
+	.container {
+		max-width: 500px;
+		margin: auto;
+	}
+
+	textarea {
+		border-radius: 5px;
+		-webkit-user-select: all;
+  		-moz-user-select: all;
+  		-ms-user-select: all;
+ 		user-select: all;
+	}
+
+	#in {
+		background-color: #40444B;
+		border: #40444B 1px solid;
+		color: #EEE;
+	}
+
+	.out {
+		background-color: #2F3136;
+		color: #B9BBBE;
+		border: #202225 1px solid;
+	}
+
+	a,a:visited {
+    	color: #00AFF4
+	}
+</style>
+</head>
+<body>
+<h1>Rebane's Discord Pin Compressor</h1>
+<div class="container">
+<h3>About</h3>
+<p>This is a simple app that converts Discord pins to Discord messages, which is useful for example when you've reached the pin limit and wish to have more room for new pins.</p>
+<h3>How to use?</h3>
+<p style="text-align: left;">
+1. Restart your Discord client (important).<br>
+2. Press ctrl+shift+i to open up the DevTools.<br>
+3. Navigate to the "Network" tab.<br>
+4. In Discord, click on the pins button in your desired chat.<br>
+5. In DevTools, locate the entry that says "pins" in the Network tab.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;(type "pins" in the filter box at the top to help find it)<br>
+6. Right-click on the entry, then choose "Copy -> Copy Response".<br>
+7. Paste the data in the box down below.<br>
+8. Copy the generated messages below and send them on Discord.<br>
+</p>
+<h3>Privacy</h3>
+<p>This app does not send your pins to my server, everything happens in your own browser locally. If you want to be extra cautious however, you can download the source code from <a href="https://gist.github.com">GitHub</a>, look over it, and open the html file in your browser by itself.</p>
+</div>
+<h2>paste data here</h2>
+<textarea id="in" rows="4" cols="100"></textarea>
+<br><label><input type="checkbox" id="nitrocheckbox">I have Nitro (4000 char messages)</label>
+<h2>copy messages here</h2>
+<div id="outmsgs">(enter the data above to generate messages)</div>
+<br>
+<small>This is an unofficial tool, it is not made or endorsed by Discord.</small>
+<script type="text/javascript">
+	const outmsgs = document.querySelector("#outmsgs");
+	const inputarea = document.querySelector("#in");
+	const nitrocheckbox = document.querySelector("#nitrocheckbox");
+
+	function contentTypeToEmoji(contentType, fileName) {
+		if (!contentType) {
+			const ext = fileName.split(".").at(-1);
+			if (["flac","wav","mp3","m4a"].includes(ext)) return "🎵";
+			if (["png","jpg","jpeg","webp","gif"].includes(ext)) return "🖼️";
+			if (["mp4","webm","mkv","mov","avi"].includes(ext)) return "🎞";
+			return "📁";
+		}
+		if (contentType.startsWith("audio")) return "🎵";
+		if (contentType.startsWith("image")) return "🖼️";
+		if (contentType.startsWith("video")) return "🎞";
+		return "📁";
+	}
+
+	function addTextarea(text) {
+		const count = document.createElement("p");
+		count.innerText = `Message #${outmsgs.childNodes.length/2 + 1}`;
+		const textarea = document.createElement("textarea");
+		textarea.classList.add("out");
+		textarea.cols = "100";
+		textarea.rows = "20";
+		textarea.readOnly = true;
+		textarea.value = text;
+		outmsgs.appendChild(count);
+		outmsgs.appendChild(textarea);
+	}
+
+	function generateOutput() {
+		outmsgs.innerHTML = '';
+		let output = `**Pinned Messages**\n*Compressed at <t:${Math.round(new Date().getTime()/1000)}:f> with <https://rebane2001.com/discord-pin-compressor/>*\n\n`;
+		for (const msg of JSON.parse(inputarea.value).reverse()) {
+			const author = `<@${msg.author.id}>`;
+			const timestamp = `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>`;
+			const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
+			// const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type)} \`${f.filename}\` -> <${f.url}>\n`, "");
+			const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "");
+			const msglink = `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}`;
+			const message = `${author} ${timestamp}\n${content}${attachments}${msglink}\n\n`;
+			if (output.length + message.length >= (nitrocheckbox.checked ? 3750 : 1950)) {
+				addTextarea(output);
+				output = "";
+			}
+			output += message;
+		}
+		addTextarea(output);
+	}
+
+	inputarea.oninput = generateOutput;
+	nitrocheckbox.oninput = generateOutput;
+</script>
+</body>
+</html>
