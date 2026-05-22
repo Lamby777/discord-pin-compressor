@@ -156,11 +156,13 @@ The output will show:<br>
 		const author = opts.author ? `<@${msg.author.id}> ` : "";
 		const timestamp = opts.timestamp ? `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>\n` : (opts.author ? "\n" : "");
 
-		const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
+		const enclosure = opts.codeblock ? "```" : "`";
+		// TODO: shorter cutoffs?
+		const content = msg.content ? `${enclosure}${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}${enclosure}\n` : "";
 		// const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type)} \`${f.filename}\` -> <${f.url}>\n`, "");
-		const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "");
+		const attachments =  opts.attachments ? msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "") : "";
 		const msglink = opts.link ? `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}` : "";
-		return `${author}${timestamp}\n${content}${attachments}${msglink}\n\n`;
+		return `${author}${timestamp}${content}${attachments}${msglink}\n\n`;
 
 	}
 
