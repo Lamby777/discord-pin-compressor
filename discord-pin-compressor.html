@@ -94,15 +94,37 @@ For more information, please refer to <https://unlicense.org>
 </div>
 <h2>paste data here</h2>
 <textarea id="in" rows="4" cols="100"></textarea>
+<br>
+<div style="display: inline-block;">
+<div>
+The output will show:<br>
+<label><input type="checkbox" id="output-title" checked> Title</label><br>
+<label><input type="checkbox" id="output-credit"> Credit</label><br>
+<label><input type="checkbox" id="output-author"> Message Author</label><br>
+<label><input type="checkbox" id="output-timestamp"> Message Timestamp</label><br>
+<label><input type="checkbox" id="output-codeblock" checked> Content inside a ``` block instead of `</label><br>
+<label><input type="checkbox" id="output-link" checked> Link to original message</label><br>
+</div>
+<hr>
 <br><label><input type="checkbox" id="nitrocheckbox">I have Nitro (4000 char messages)</label>
+</div>
 <h2>copy messages here</h2>
 <div id="outmsgs">(enter the data above to generate messages)</div>
 <br>
 <small>This is an unofficial tool, it is not made or endorsed by Discord.</small>
 <script type="text/javascript">
-	const outmsgs = document.querySelector("#outmsgs");
-	const inputarea = document.querySelector("#in");
-	const nitrocheckbox = document.querySelector("#nitrocheckbox");
+	const outmsgs = document.getElementById("outmsgs");
+	const inputarea = document.getElementById("in");
+	const nitrocheckbox = document.getElementById("nitrocheckbox");
+	const optionBoxes = ["title", "credit", "author", "timestamp", "codeblock", "link"].reduce(
+		(acc, v) => {
+			acc[v] = document.getElementById("output-" + v);
+			return acc;
+		}, {}
+	);
+	function getOptions() {
+		return Object.fromEntries(Object.entries(optionBoxes).map(([k, v]) => [k, v.checked]));
+	}
 
 	function contentTypeToEmoji(contentType, fileName) {
 		if (!contentType) {
@@ -132,6 +154,8 @@ For more information, please refer to <https://unlicense.org>
 	}
 
 	function generateOutput() {
+		const options = getOptions();
+		console.log(options);
 		outmsgs.innerHTML = '';
 		let output = `**Pinned Messages**\n*Compressed at <t:${Math.round(new Date().getTime()/1000)}:f> with <https://rebane2001.com/discord-pin-compressor/>*\n\n`;
 		for (const item of JSON.parse(inputarea.value).items.reverse()) {
@@ -154,6 +178,9 @@ For more information, please refer to <https://unlicense.org>
 
 	inputarea.oninput = generateOutput;
 	nitrocheckbox.oninput = generateOutput;
+	for (const box of Object.values(optionBoxes)) {
+		box.oninput = generateOutput;
+	}
 </script>
 </body>
 </html>
