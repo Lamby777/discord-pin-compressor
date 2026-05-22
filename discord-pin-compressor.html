@@ -134,7 +134,8 @@ For more information, please refer to <https://unlicense.org>
 	function generateOutput() {
 		outmsgs.innerHTML = '';
 		let output = `**Pinned Messages**\n*Compressed at <t:${Math.round(new Date().getTime()/1000)}:f> with <https://rebane2001.com/discord-pin-compressor/>*\n\n`;
-		for (const msg of JSON.parse(inputarea.value).reverse()) {
+		for (const item of JSON.parse(inputarea.value).items.reverse()) {
+			const msg = item.message;
 			const author = `<@${msg.author.id}>`;
 			const timestamp = `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>`;
 			const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
