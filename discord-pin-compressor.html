@@ -122,9 +122,7 @@ The output will show:<br>
 			return acc;
 		}, {}
 	);
-	function getOptions() {
-		return Object.fromEntries(Object.entries(optionBoxes).map(([k, v]) => [k, v.checked]));
-	}
+	const getOptions = () => Object.fromEntries(Object.entries(optionBoxes).map(([k, v]) => [k, v.checked]));
 
 	function contentTypeToEmoji(contentType, fileName) {
 		if (!contentType) {
@@ -153,25 +151,36 @@ The output will show:<br>
 		outmsgs.appendChild(textarea);
 	}
 
+	function fmtMessage(opts, msg) {
+		// const optionBoxes = ["title", "credit", "author", "timestamp", "codeblock", "link"].reduce(
+		const author = `<@${msg.author.id}>`;
+		const timestamp = `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>`;
+		const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
+		// const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type)} \`${f.filename}\` -> <${f.url}>\n`, "");
+		const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "");
+		const msglink = `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}`;
+		return `${author} ${timestamp}\n${content}${attachments}${msglink}\n\n`;
+
+	}
+
 	function generateOutput() {
-		const options = getOptions();
-		console.log(options);
+		const opts = getOptions();
 		outmsgs.innerHTML = '';
-		let output = `**Pinned Messages**\n*Compressed at <t:${Math.round(new Date().getTime()/1000)}:f> with <https://rebane2001.com/discord-pin-compressor/>*\n\n`;
+
+		let output = "";
+            	if (opts.title) output += `**Pinned Messages**, comp @ <t:${Math.round(new Date().getTime()/1000)}:f>\n`;
+		if (opts.credit) output += "*with <https://rebane2001.com/discord-pin-compressor/>*\n";
+		output += "\n";
+
 		for (const item of JSON.parse(inputarea.value).items.reverse()) {
 			const msg = item.message;
-			const author = `<@${msg.author.id}>`;
-			const timestamp = `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>`;
-			const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
-			// const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type)} \`${f.filename}\` -> <${f.url}>\n`, "");
-			const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "");
-			const msglink = `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}`;
-			const message = `${author} ${timestamp}\n${content}${attachments}${msglink}\n\n`;
-			if (output.length + message.length >= (nitrocheckbox.checked ? 3750 : 1950)) {
+			const formatted = fmtMessage(opts, msg);
+
+			if (output.length + formatted.length >= (nitrocheckbox.checked ? 3750 : 1950)) {
 				addTextarea(output);
 				output = "";
 			}
-			output += message;
+			output += formatted;
 		}
 		addTextarea(output);
 	}
