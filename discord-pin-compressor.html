@@ -103,6 +103,7 @@ The output will show:<br>
 <label><input type="checkbox" id="output-author"> Message Author</label><br>
 <label><input type="checkbox" id="output-timestamp"> Message Timestamp</label><br>
 <label><input type="checkbox" id="output-codeblock" checked> Content inside a ``` block instead of `</label><br>
+<label><input type="checkbox" id="output-attachments" checked> Attachment names and types</label><br>
 <label><input type="checkbox" id="output-link" checked> Link to original message</label><br>
 </div>
 <hr>
@@ -116,7 +117,7 @@ The output will show:<br>
 	const outmsgs = document.getElementById("outmsgs");
 	const inputarea = document.getElementById("in");
 	const nitrocheckbox = document.getElementById("nitrocheckbox");
-	const optionBoxes = ["title", "credit", "author", "timestamp", "codeblock", "link"].reduce(
+	const optionBoxes = ["title", "credit", "author", "timestamp", "codeblock", "attachments", "link"].reduce(
 		(acc, v) => {
 			acc[v] = document.getElementById("output-" + v);
 			return acc;
@@ -152,14 +153,14 @@ The output will show:<br>
 	}
 
 	function fmtMessage(opts, msg) {
-		// const optionBoxes = ["title", "credit", "author", "timestamp", "codeblock", "link"].reduce(
-		const author = `<@${msg.author.id}>`;
-		const timestamp = `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>`;
+		const author = opts.author ? `<@${msg.author.id}> ` : "";
+		const timestamp = opts.timestamp ? `<t:${Math.round(new Date(msg.timestamp).getTime()/1000)}:f>\n` : (opts.author ? "\n" : "");
+
 		const content = msg.content ? `\`${msg.content.replaceAll("`", "'").replace(/[\n\r]/g," ").replace(/([\s\S]{128})[\s\S]+/,"$1...")}\`\n` : "";
 		// const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type)} \`${f.filename}\` -> <${f.url}>\n`, "");
 		const attachments =  msg.attachments.reduce((prev, f) => prev + `${contentTypeToEmoji(f?.content_type, f.filename)} \`${f.filename}\`\n`, "");
-		const msglink = `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}`;
-		return `${author} ${timestamp}\n${content}${attachments}${msglink}\n\n`;
+		const msglink = opts.link ? `http://discord.com/channels/@me/${msg.channel_id}/${msg.id}` : "";
+		return `${author}${timestamp}\n${content}${attachments}${msglink}\n\n`;
 
 	}
 
