@@ -174,7 +174,7 @@ The output will show:<br>
 		let output = "";
             	if (opts.title) output += `**Pinned Messages**, comp @ <t:${Math.round(new Date().getTime()/1000)}:f>\n`;
 		if (opts.credit) output += "*with <https://sparklet.org/discord-pin-compressor/>*\n";
-		output += "\n";
+		if (output.length > 0) output += "\n";
 
 		for (const item of JSON.parse(inputarea.value).items.reverse()) {
 			const msg = item.message;
