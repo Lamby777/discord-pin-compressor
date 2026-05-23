@@ -122,7 +122,8 @@ For more information, please refer to <https://unlicense.org>
         <div id="databox-container"></div>
         <p>
             You can create more text boxes if you would like to compress
-            multiple batches of messages at once.
+            multiple batches of messages at once. Pins in all boxes will be
+            added together and sorted by pin date.
         </p>
         <button onclick="addNewDatabox()">pin more!!</button>
         <br />
@@ -166,7 +167,7 @@ For more information, please refer to <https://unlicense.org>
             >
             <hr />
         </div>
-        <h2>copy messages here</h2>
+        <h2>copy messages here <span id="msg-count"></span></h2>
         <div id="outmsgs">(enter the data above to generate messages)</div>
         <br />
         <small
@@ -183,6 +184,7 @@ For more information, please refer to <https://unlicense.org>
             const databoxContainer =
                 document.getElementById("databox-container");
             const databoxTemplate = document.getElementById("databox-template");
+            const msgCountE = document.getElementById("msg-count");
 
             addNewDatabox();
 
