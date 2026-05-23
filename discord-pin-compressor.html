@@ -269,6 +269,19 @@ For more information, please refer to <https://unlicense.org>
                 return `${author}${timestamp}${content}${attachments}${msglink}\n\n`;
             }
 
+            function getPinItems() {
+                let items = [];
+
+                for (inputbox of databoxContainer.children) {
+                    if (inputbox.value.length === 0) continue;
+
+                    const parsed = JSON.parse(inputbox.value).items;
+                    items.push(...parsed);
+                }
+
+                return items;
+            }
+
             function generateOutput() {
                 const opts = getOptions();
                 outmsgs.innerHTML = "";
@@ -281,26 +294,21 @@ For more information, please refer to <https://unlicense.org>
                         "*with <https://sparklet.org/discord-pin-compressor/>*\n";
                 if (output.length > 0) output += "\n";
 
-                for (inputbox of databoxContainer.children) {
-                    if (inputbox.value.length === 0) continue;
+                let items = getPinItems();
+                for (const item of items) {
+                    const msg = item.message;
+                    const formatted = fmtMessage(opts, msg);
 
-                    for (const item of JSON.parse(
-                        inputbox.value,
-                    ).items.reverse()) {
-                        const msg = item.message;
-                        const formatted = fmtMessage(opts, msg);
-
-                        if (
-                            output.length + formatted.length >=
-                            (nitrocheckbox.checked ? 3750 : 1950)
-                        ) {
-                            addTextarea(output);
-                            output = "";
-                        }
-                        output += formatted;
+                    if (
+                        output.length + formatted.length >=
+                        (nitrocheckbox.checked ? 3750 : 1950)
+                    ) {
+                        addTextarea(output);
+                        output = "";
                     }
-                    addTextarea(output);
+                    output += formatted;
                 }
+                addTextarea(output);
             }
 
             function addNewDatabox() {
