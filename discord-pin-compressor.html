@@ -55,7 +55,7 @@ For more information, please refer to <https://unlicense.org>
                 user-select: all;
             }
 
-            #in {
+            .databox {
                 background-color: #40444b;
                 border: #40444b 1px solid;
                 color: #eee;
@@ -119,9 +119,13 @@ For more information, please refer to <https://unlicense.org>
             </p>
         </div>
         <h2>paste data here</h2>
-        <textarea id="in" rows="4" cols="100"></textarea>
+        <div id="databox-container"></div>
+        <button onclick="addNewDatabox()">pin more!!</button>
+        <br />
+        <br />
         <br />
         <div style="display: inline-block">
+            <hr />
             <div>
                 The output will show:<br />
                 <label
@@ -152,11 +156,11 @@ For more information, please refer to <https://unlicense.org>
                     original message</label
                 ><br />
             </div>
-            <hr />
             <br /><label
                 ><input type="checkbox" id="nitrocheckbox" />I have Nitro (4000
                 char messages)</label
             >
+            <hr />
         </div>
         <h2>copy messages here</h2>
         <div id="outmsgs">(enter the data above to generate messages)</div>
@@ -165,10 +169,19 @@ For more information, please refer to <https://unlicense.org>
             >This is an unofficial tool, it is not made or endorsed by
             Discord.</small
         >
+        <template id="databox-template">
+            <textarea class="databox" rows="4" cols="100"></textarea>
+        </template>
+
         <script type="text/javascript">
             const outmsgs = document.getElementById("outmsgs");
-            const inputarea = document.getElementById("in");
             const nitrocheckbox = document.getElementById("nitrocheckbox");
+            const databoxContainer =
+                document.getElementById("databox-container");
+            const databoxTemplate = document.getElementById("databox-template");
+
+            addNewDatabox();
+
             const optionBoxes = [
                 "title",
                 "credit",
@@ -262,25 +275,34 @@ For more information, please refer to <https://unlicense.org>
                         "*with <https://sparklet.org/discord-pin-compressor/>*\n";
                 if (output.length > 0) output += "\n";
 
-                for (const item of JSON.parse(
-                    inputarea.value,
-                ).items.reverse()) {
-                    const msg = item.message;
-                    const formatted = fmtMessage(opts, msg);
+                for (inputbox of databoxContainer.children) {
+                    if (inputbox.value.length === 0) continue;
 
-                    if (
-                        output.length + formatted.length >=
-                        (nitrocheckbox.checked ? 3750 : 1950)
-                    ) {
-                        addTextarea(output);
-                        output = "";
+                    for (const item of JSON.parse(
+                        inputbox.value,
+                    ).items.reverse()) {
+                        const msg = item.message;
+                        const formatted = fmtMessage(opts, msg);
+
+                        if (
+                            output.length + formatted.length >=
+                            (nitrocheckbox.checked ? 3750 : 1950)
+                        ) {
+                            addTextarea(output);
+                            output = "";
+                        }
+                        output += formatted;
                     }
-                    output += formatted;
+                    addTextarea(output);
                 }
-                addTextarea(output);
             }
 
-            inputarea.oninput = generateOutput;
+            function addNewDatabox() {
+                const clone = databoxTemplate.content.cloneNode(true);
+                clone.querySelector("textarea").oninput = generateOutput;
+                databoxContainer.appendChild(clone);
+            }
+
             nitrocheckbox.oninput = generateOutput;
             for (const box of Object.values(optionBoxes)) {
                 box.oninput = generateOutput;
