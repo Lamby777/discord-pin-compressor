@@ -269,7 +269,7 @@ For more information, please refer to <https://unlicense.org>
                 return `${author}${timestamp}${content}${attachments}${msglink}\n\n`;
             }
 
-            function getPinItems() {
+            function getPinItemsSorted() {
                 let items = [];
 
                 for (inputbox of databoxContainer.children) {
@@ -278,6 +278,10 @@ For more information, please refer to <https://unlicense.org>
                     const parsed = JSON.parse(inputbox.value).items;
                     items.push(...parsed);
                 }
+
+                items.sort(
+                    (a, b) => new Date(a.pinned_at) - new Date(b.pinned_at),
+                );
 
                 return items;
             }
@@ -294,7 +298,7 @@ For more information, please refer to <https://unlicense.org>
                         "*with <https://sparklet.org/discord-pin-compressor/>*\n";
                 if (output.length > 0) output += "\n";
 
-                let items = getPinItems();
+                let items = getPinItemsSorted();
                 for (const item of items) {
                     const msg = item.message;
                     const formatted = fmtMessage(opts, msg);
