@@ -2,10 +2,10 @@
 <html lang="en">
 <head>
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
-<title>Rebane's Discord Pin Compressor</title>
+<title>Cherry's Discord Pin Compressor</title>
 <meta charset="UTF-8">
-<meta name="description" content="Rebane's Discord Pin Compressor">
-<meta name="author" content="rebane2001">
+<meta name="description" content="Cherry's Discord Pin Compressor">
+<meta name="author" content="refcherry">
 <style>
 /*
 This license applies to the entire page, not just the style block.
@@ -73,10 +73,11 @@ For more information, please refer to <https://unlicense.org>
 </style>
 </head>
 <body>
-<h1>Rebane's Discord Pin Compressor</h1>
+<h1>Cherry's Discord Pin Compressor</h1>
+<h3>(Fork of Rebane's Discord Pin Compressor)</h3>
 <div class="container">
 <h3>About</h3>
-<p>This is a simple app that converts Discord pins to Discord messages, which is useful for example when you've reached the pin limit and wish to have more room for new pins.</p>
+<p>This is a simple app that converts Discord pins to Discord messages, which is useful for example when you've reached the pin limit and wish to have more room for new pins. This is a fork that fixes it to work in 2026, and adds more customization options for the "compressed" output. Most of the stuff was already done by rebane2001 <a href="https://gist.github.com/rebane2001/8d8e97bda4dd1c7134c08b0a9d74f57b">here</a>.</p>
 <h3>How to use?</h3>
 <p style="text-align: left;">
 1. Restart your Discord client (important).<br>
@@ -90,7 +91,7 @@ For more information, please refer to <https://unlicense.org>
 8. Copy the generated messages below and send them on Discord.<br>
 </p>
 <h3>Privacy</h3>
-<p>This app does not send your pins to my server, everything happens in your own browser locally. If you want to be extra cautious however, you can download the source code from <a href="https://gist.github.com/rebane2001/8d8e97bda4dd1c7134c08b0a9d74f57b">GitHub</a>, look over it, and open the html file in your browser by itself.</p>
+<p>This app does not send your pins to my server, everything happens in your own browser locally. If you want to be extra cautious however, you can download the source code from <a href="https://github.com/Lamby777/discord-pin-compressor/blob/mane/discord-pin-compressor.html">GitHub</a>, look over it, and open the html file in your browser by itself.</p>
 </div>
 <h2>paste data here</h2>
 <textarea id="in" rows="4" cols="100"></textarea>
@@ -172,7 +173,7 @@ The output will show:<br>
 
 		let output = "";
             	if (opts.title) output += `**Pinned Messages**, comp @ <t:${Math.round(new Date().getTime()/1000)}:f>\n`;
-		if (opts.credit) output += "*with <https://rebane2001.com/discord-pin-compressor/>*\n";
+		if (opts.credit) output += "*with <https://sparklet.org/discord-pin-compressor/>*\n";
 		output += "\n";
 
 		for (const item of JSON.parse(inputarea.value).items.reverse()) {
